@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
 import { Search, UserPlus, Plus, Minus, Trash2, ShoppingCart, Check, X, Printer, ChevronUp, Loader2, AlertCircle } from 'lucide-react';
 import { getCustomers, getServices, createOrder, createCustomer } from '../services/api';
@@ -385,10 +386,10 @@ export default function NewOrder() {
             )}
 
             {/* Receipt Modal */}
-            {receiptOrder && (
+            {receiptOrder && createPortal(
                 <>
                     {/* Screen Modal (hidden during print) */}
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 print:hidden">
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 print:hidden">
                         <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
                             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                                 <div className="flex items-center gap-2">
@@ -427,7 +428,8 @@ export default function NewOrder() {
                         <Receipt order={receiptOrder} settings={settings} />
                         <Receipt order={receiptOrder} settings={settings} />
                     </div>
-                </>
+                </>,
+                document.body
             )}
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 print:hidden">
@@ -509,8 +511,8 @@ export default function NewOrder() {
             )}
 
             {/* Mobile Cart Modal */}
-            {showMobileCart && (
-                <div className="xl:hidden fixed inset-0 z-50 flex flex-col justify-end print:hidden" onClick={() => setShowMobileCart(false)}>
+            {showMobileCart && createPortal(
+                <div className="xl:hidden fixed inset-0 z-[100] flex flex-col justify-end print:hidden" onClick={() => setShowMobileCart(false)}>
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
                     <div
                         className="relative bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto animate-[slideUp_0.3s_ease]"
@@ -533,12 +535,13 @@ export default function NewOrder() {
                             {OrderSummaryContent()}
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Add Customer Modal */}
-            {showAddCustomer && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowAddCustomer(false)}>
+            {showAddCustomer && createPortal(
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setShowAddCustomer(false)}>
                     <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-bold text-slate-800">Tambah Pelanggan Baru</h3>
@@ -596,7 +599,8 @@ export default function NewOrder() {
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );
