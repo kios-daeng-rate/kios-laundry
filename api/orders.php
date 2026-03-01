@@ -6,7 +6,13 @@ $tenantId = getTenantId();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $stmt = $db->prepare("SELECT * FROM orders WHERE tenant_id = ? ORDER BY created_at DESC");
+        $stmt = $db->prepare("
+            SELECT o.*, c.phone as customer_phone 
+            FROM orders o 
+            LEFT JOIN customers c ON o.customer_id = c.id 
+            WHERE o.tenant_id = ? 
+            ORDER BY o.created_at DESC
+        ");
         $stmt->execute([$tenantId]);
         $orders = $stmt->fetchAll();
         sendResponse($orders);
