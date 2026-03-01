@@ -377,7 +377,7 @@ export default function NewOrder() {
     );
 
     return (
-        <div className="space-y-6 pb-24 xl:pb-6">
+        <div className="space-y-6 pb-24 xl:pb-6 print:pb-0 print:space-y-0">
             {error && !receiptOrder && (
                 <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm flex items-center gap-2 border border-red-100">
                     <AlertCircle className="w-5 h-5 shrink-0" />

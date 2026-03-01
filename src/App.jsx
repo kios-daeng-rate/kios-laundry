@@ -83,7 +83,7 @@ export default function App() {
     <>
       <GlobalAlertModal />
       <Router>
-        <div className={`transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'} min-h-screen bg-slate-50`}>
+        <div className={`transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'} min-h-screen bg-slate-50 print:min-h-0 print:bg-white`}>
           <Routes>
             <Route path="/order-status/:orderId" element={<Suspense fallback={<PageLoader />}><PublicStatus /></Suspense>} />
             {!user ? (

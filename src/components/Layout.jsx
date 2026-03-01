@@ -36,7 +36,7 @@ export default function Layout({ user, onLogout }) {
     }, []);
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 print:min-h-0 print:bg-white">
             <div className="print:hidden">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} storeName={settings.store_name} brandLogo={settings.brand_logo} />
             </div>
