@@ -1,16 +1,50 @@
-# React + Vite
+# FreshClean Laundry POS 🧺
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplikasi Kasir (Point of Sale) khusus untuk usaha Laundry dengan fitur manajemen pelanggan, order, reports, dan branding dinamis.
 
-Currently, two official plugins are available:
+## 🚀 Persyaratan Sistem
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Sebelum melakukan instalasi, pastikan server Anda (Linux/STB/VPS) memenuhi spesifikasi berikut:
+- **Web Server**: Apache atau Nginx
+- **PHP**: Versi 7.4 ke atas (Direkomendasikan 8.1+) dengan ekstensi `pdo_mysql`
+- **Database**: MySQL 5.7+ atau MariaDB 10.3+
+- **Frontend Build**: Node.js & npm (Hanya jika ingin build dari source code)
 
-## React Compiler
+## 🛠️ Langkah Instalasi
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. Clone Repository
+Gunakan perintah `git clone` untuk mengambil source code ke server/komputer Anda:
+```bash
+git clone https://github.com/kios-daeng-rate/kios-laundry.git
+cd kios-laundry
+```
 
-## Expanding the ESLint configuration
+### 2. Build Frontend (Opsional jika folder `dist` sudah ada)
+Jika Anda melakukan perubahan pada source code React, Anda perlu melakukan build ulang:
+```bash
+npm install
+npm run build
+```
+Hasil build akan berada di folder `dist`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 3. Deploy ke Web Server
+Pindahkan isi dari folder `dist` (beserta folder `api`) ke dalam direktori web server Anda (misal: `/var/www/html` atau `public_html`).
+
+Pastikan folder `api` memiliki hak akses tulis (write permission) karena sistem akan membuat file `api/config.php` secara otomatis.
+
+### 4. Jalankan Web Installer
+1. Buka browser dan akses ke: `http://domain-anda.com/api/install.php`
+2. Ikuti langkah-langkah di layar:
+   - **Step 1**: Cek persyaratan sistem.
+   - **Step 2**: Masukkan kredensial Database MySQL (Host, User, Pass, DB Name).
+   - **Step 3**: Atur nama Laundry dan akun Admin utama.
+   - **Step 4**: Selesai.
+
+### 5. Keamanan (Penting!)
+Setelah instalasi berhasil, **segera hapus file `api/install.php`** dari server Anda untuk mencegah penyalahgunaan akses setup.
+
+## 🔐 Akun Default
+Setelah instalasi, Anda bisa login menggunakan username dan password admin yang telah Anda buat pada Step 3 di web installer.
+
+---
+**Powered by Kios Daeng Rate with AI 2026**
