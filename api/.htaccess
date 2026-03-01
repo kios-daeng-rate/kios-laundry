@@ -1,0 +1,7 @@
+# Nonaktifkan Directory Listing (Mencegah orang melihat daftar file)
+Options -Indexes
+
+# Lindungi file sensitif (mencegah akses langsung ke file konfigurasi)
+<FilesMatch "^(config\.php|email_config\.php|data\.php)$">
+    Require all denied
+</FilesMatch>

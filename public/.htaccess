@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # 0. Redirect ke instalasi jika sistem belum dikonfigurasi (api/config.php tidak ada)
+  # Harus mengecek dari %{DOCUMENT_ROOT}
+  RewriteCond %{DOCUMENT_ROOT}/api/config.php !-f
+  RewriteCond %{REQUEST_URI} !^/api/install.php$ [NC]
+  RewriteRule ^(.*)$ /api/install.php [R=302,L]
+
+  # 1. Izinkan request ke folder API agar langsung memanggil PHP (tidak dicegat React)
+  RewriteCond %{REQUEST_URI} !^/api/ [NC]
+  
+  # 2. Izinkan file/folder fisik (seperti assets, gambar) untuk diakses langsung
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # 3. Semua URL sisa (misal /dashboard, /orders) diarahkan ke index.html (React Router)
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>
