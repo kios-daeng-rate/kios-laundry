@@ -36,6 +36,18 @@ export default function Services() {
         fetchServices();
     }, []);
 
+    // Prevent body scroll when modal is open
+    useEffect(() => {
+        if (showModal || serviceToDelete) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [showModal, serviceToDelete]);
+
     const categoryOrder = ['Regular', 'Express', 'Premium', 'Spesial'];
     const categories = [...new Set(services.map((s) => s.category))].sort((a, b) => {
         const indexA = categoryOrder.indexOf(a);

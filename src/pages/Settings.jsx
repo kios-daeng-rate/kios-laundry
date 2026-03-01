@@ -72,6 +72,18 @@ export default function Settings() {
         fetchPegawai();
     }, []);
 
+    // Prevent body scroll when modal is open
+    useEffect(() => {
+        if (showPegawaiModal || showResetModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [showPegawaiModal, showResetModal]);
+
     const handleSave = async () => {
         setIsSaving(true);
         setError('');

@@ -53,6 +53,19 @@ export default function NewOrder() {
         fetchData();
     }, []);
 
+    // Prevent body scroll when any modal is open
+    useEffect(() => {
+        if (receiptOrder || showAddCustomer || showMobileCart) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [receiptOrder, showAddCustomer, showMobileCart]);
+
     const filteredCustomers = useMemo(() => {
         if (!searchCustomer.trim()) return [];
         return customers.filter(

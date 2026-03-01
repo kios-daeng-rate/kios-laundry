@@ -68,6 +68,18 @@ export default function Orders() {
         fetchOrders();
     }, []);
 
+    // Prevent body scroll when modal is open
+    useEffect(() => {
+        if (selectedOrder) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [selectedOrder]);
+
     const filteredOrders = useMemo(() => {
         return orderList.filter((o) => {
             const matchesStatus = activeStatus === 'Semua' || o.status === activeStatus;

@@ -37,6 +37,18 @@ export default function Customers() {
         fetchCustomers();
     }, []);
 
+    // Prevent body scroll when modal is open
+    useEffect(() => {
+        if (showModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [showModal]);
+
     const filteredCustomers = customers.filter(
         (c) =>
             c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
