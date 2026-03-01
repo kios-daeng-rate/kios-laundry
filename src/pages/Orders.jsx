@@ -1,7 +1,10 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Search, Eye, MessageCircle, ChevronDown, X, Loader2, AlertCircle } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { useOutletContext } from 'react-router-dom';
+import { Search, Eye, MessageCircle, ChevronDown, X, Loader2, AlertCircle, Printer, Check } from 'lucide-react';
 import { getOrders, updateOrderStatus } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
+import Receipt from '../components/Receipt';
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('id-ID', {
@@ -51,6 +54,9 @@ export default function Orders() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+    const [showReceipt, setShowReceipt] = useState(false);
+    const receiptRef = useRef();
+    const { settings } = useOutletContext();
 
     const fetchOrders = async () => {
         setIsLoading(true);
@@ -70,7 +76,7 @@ export default function Orders() {
 
     // Prevent body scroll when modal is open
     useEffect(() => {
-        if (selectedOrder) {
+        if (selectedOrder || showReceipt) {
             document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
         } else {
@@ -81,7 +87,7 @@ export default function Orders() {
             document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
         };
-    }, [selectedOrder]);
+    }, [selectedOrder, showReceipt]);
 
     const filteredOrders = useMemo(() => {
         return orderList.filter((o) => {
@@ -303,17 +309,127 @@ export default function Orders() {
                                 <span className="text-lg font-bold text-primary-600">{formatCurrency(selectedOrder.total)}</span>
                             </div>
 
-                            {/* Manual WhatsApp button */}
-                            <button
-                                onClick={() => sendWhatsApp(selectedOrder)}
-                                className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 transition-all text-sm"
-                            >
-                                <MessageCircle className="w-4 h-4" />
-                                Kirim Pesan WhatsApp
-                            </button>
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => sendWhatsApp(selectedOrder)}
+                                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 transition-all text-sm"
+                                >
+                                    <MessageCircle className="w-4 h-4" />
+                                    Kirim WA
+                                </button>
+                                <button
+                                    onClick={() => setShowReceipt(true)}
+                                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all text-sm shadow-lg shadow-primary-600/30"
+                                >
+                                    <Printer className="w-4 h-4" />
+                                    Lihat Struk
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Receipt Modal */}
+            {showReceipt && selectedOrder && createPortal(
+                <>
+                    {/* Screen Modal (hidden during print) */}
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4 print:hidden">
+                        <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                                <h3 className="text-lg font-bold text-slate-800">Struk Pesanan</h3>
+                                <button onClick={() => setShowReceipt(false)} className="p-1 rounded-lg hover:bg-slate-100">
+                                    <X className="w-5 h-5 text-slate-400" />
+                                </button>
+                            </div>
+                            <div className="max-h-[60vh] overflow-y-auto bg-slate-50 py-4 custom-scrollbar">
+                                <div className="space-y-8 flex flex-col items-center">
+                                    <Receipt
+                                        ref={receiptRef}
+                                        order={{
+                                            id: selectedOrder.id,
+                                            customerName: selectedOrder.customer_name,
+                                            customerPhone: '', // Not available in getOrders list
+                                            paymentMethod: selectedOrder.payment_method || 'Tunai',
+                                            notes: selectedOrder.notes,
+                                            items: [
+                                                {
+                                                    name: selectedOrder.service_name,
+                                                    qty: parseFloat(selectedOrder.weight),
+                                                    unit: 'kg', // Fallback, could be empty
+                                                    price: selectedOrder.total / (parseFloat(selectedOrder.weight) || 1),
+                                                    subtotal: selectedOrder.total
+                                                }
+                                            ],
+                                            total: selectedOrder.total
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-3 p-4 border-t border-slate-100">
+                                <button
+                                    onClick={() => setShowReceipt(false)}
+                                    className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-all text-sm"
+                                >
+                                    Tutup
+                                </button>
+                                <button
+                                    onClick={() => window.print()}
+                                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-600/30 hover:shadow-xl transition-all text-sm"
+                                >
+                                    <Printer className="w-4 h-4" />
+                                    Cetak Struk
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Print Content (hidden on screen) */}
+                    <div className="hidden print:block printable-receipts">
+                        <Receipt
+                            settings={settings}
+                            order={{
+                                id: selectedOrder.id,
+                                customerName: selectedOrder.customer_name,
+                                customerPhone: '',
+                                paymentMethod: selectedOrder.payment_method || 'Tunai',
+                                notes: selectedOrder.notes,
+                                items: [
+                                    {
+                                        name: selectedOrder.service_name,
+                                        qty: parseFloat(selectedOrder.weight),
+                                        unit: 'kg',
+                                        price: selectedOrder.total / (parseFloat(selectedOrder.weight) || 1),
+                                        subtotal: selectedOrder.total
+                                    }
+                                ],
+                                total: selectedOrder.total
+                            }}
+                        />
+                        <Receipt
+                            settings={settings}
+                            order={{
+                                id: selectedOrder.id,
+                                customerName: selectedOrder.customer_name,
+                                customerPhone: '',
+                                paymentMethod: selectedOrder.payment_method || 'Tunai',
+                                notes: selectedOrder.notes,
+                                items: [
+                                    {
+                                        name: selectedOrder.service_name,
+                                        qty: parseFloat(selectedOrder.weight),
+                                        unit: 'kg',
+                                        price: selectedOrder.total / (parseFloat(selectedOrder.weight) || 1),
+                                        subtotal: selectedOrder.total
+                                    }
+                                ],
+                                total: selectedOrder.total
+                            }}
+                        />
+                    </div>
+                </>,
+                document.body
             )}
         </div>
     );
