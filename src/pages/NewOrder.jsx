@@ -56,12 +56,15 @@ export default function NewOrder() {
     // Prevent body scroll when any modal is open
     useEffect(() => {
         if (receiptOrder || showAddCustomer || showMobileCart) {
+            document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
         } else {
+            document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
         }
 
         return () => {
+            document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
         };
     }, [receiptOrder, showAddCustomer, showMobileCart]);

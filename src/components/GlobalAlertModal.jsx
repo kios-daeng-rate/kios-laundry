@@ -29,13 +29,16 @@ export default function GlobalAlertModal() {
 
     useEffect(() => {
         if (isOpen) {
+            document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
         } else {
-            document.body.style.overflow = 'auto'; // Or ''
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = ''; // Or ''
         }
 
         return () => {
-            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
         };
     }, [isOpen]);
 
