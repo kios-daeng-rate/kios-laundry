@@ -1,1 +1,0 @@
-import{j as t,m as o}from"./index-BEgela85.js";function a({status:e}){const s=o(e);return t.jsxs("span",{className:`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${s.bg} ${s.text}`,children:[t.jsx("span",{className:`w-1.5 h-1.5 rounded-full ${s.dot}`}),e]})}export{a as S};

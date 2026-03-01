@@ -37,10 +37,14 @@ export default function Layout({ user, onLogout }) {
 
     return (
         <div className="min-h-screen bg-slate-50">
-            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} storeName={settings.store_name} brandLogo={settings.brand_logo} />
-            <div className="lg:ml-64 transition-all duration-300">
-                <Header title={title} onMenuClick={() => setSidebarOpen(true)} user={user} onLogoutClick={() => setShowLogoutModal(true)} storeName={settings.store_name} />
-                <main className="p-4 lg:p-8">
+            <div className="print:hidden">
+                <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} storeName={settings.store_name} brandLogo={settings.brand_logo} />
+            </div>
+            <div className="lg:ml-64 transition-all duration-300 print:ml-0">
+                <div className="print:hidden">
+                    <Header title={title} onMenuClick={() => setSidebarOpen(true)} user={user} onLogoutClick={() => setShowLogoutModal(true)} storeName={settings.store_name} />
+                </div>
+                <main className="p-4 lg:p-8 print:p-0">
                     <Outlet context={{ settings, user, refreshSettings: fetchSettings }} />
                 </main>
             </div>

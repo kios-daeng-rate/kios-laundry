@@ -6,13 +6,8 @@ $tenantId = getTenantId();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        // Auto-migrate: ensure brand_logo column exists and is LONGTEXT
-        try { 
-            // Coba tambah kolom jika belum ada
-            $db->exec("ALTER TABLE settings ADD COLUMN IF NOT EXISTS brand_logo LONGTEXT NULL"); 
-            // Pastikan tipe data adalah LONGTEXT (jika sebelumnya VARCHAR 255)
-            $db->exec("ALTER TABLE settings MODIFY COLUMN brand_logo LONGTEXT NULL");
-        } catch (Exception $e) {}
+        // Auto-migrate: add brand_logo column if not exists
+        try { $db->exec("ALTER TABLE settings ADD COLUMN IF NOT EXISTS brand_logo LONGTEXT NULL"); } catch (Exception $e) {}
 
         $stmt = $db->prepare("SELECT * FROM settings WHERE tenant_id = ? LIMIT 1");
         $stmt->execute([$tenantId]);

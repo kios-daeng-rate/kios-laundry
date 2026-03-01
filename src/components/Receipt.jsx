@@ -2,29 +2,35 @@ import { forwardRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { formatCurrency } from '../data/dummyData';
 
-const Receipt = forwardRef(({ order }, ref) => {
+const Receipt = forwardRef(({ order, settings }, ref) => {
     if (!order) return null;
 
     const now = new Date();
     const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-    // QR data contains order summary
-    const qrData = JSON.stringify({
-        id: order.id,
-        customer: order.customerName,
-        total: order.total,
-        date: dateStr,
-        time: timeStr,
-    });
+    // QR data is a full URL to the tracking page
+    const statusUrl = `${window.location.origin}/order-status/${order.id}`;
+    const qrData = statusUrl;
 
     return (
-        <div ref={ref} className="receipt-content bg-white w-[300px] mx-auto p-6 font-mono text-xs text-slate-800">
+        <div ref={ref} className="receipt-content bg-white w-[300px] mx-auto p-6 font-mono text-xs text-slate-800 border border-slate-100 shadow-sm print:shadow-none print:border-none">
             {/* Header */}
-            <div className="text-center mb-4">
-                <h2 className="text-base font-bold tracking-wide">FreshClean Laundry</h2>
-                <p className="text-[10px] text-slate-500 mt-0.5">Jl. Kenanga No. 88, Jakarta Pusat</p>
-                <p className="text-[10px] text-slate-500">Telp: 021-555-1234</p>
+            <div className="text-center mb-4 flex flex-col items-center">
+                <img
+                    src={settings?.brand_logo || '/favicon.svg'}
+                    alt="Logo"
+                    className="w-16 h-16 object-contain mb-2"
+                />
+                <h2 className="text-base font-bold tracking-wide uppercase">
+                    {settings?.store_name || 'FreshClean Laundry'}
+                </h2>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                    {settings?.address || 'Jl. Kenanga No. 88, Jakarta Pusat'}
+                </p>
+                <p className="text-[10px] text-slate-500">
+                    Telp: {settings?.phone || '021-555-1234'}
+                </p>
             </div>
 
             <div className="border-t border-dashed border-slate-300 my-3" />
@@ -111,7 +117,7 @@ const Receipt = forwardRef(({ order }, ref) => {
             {/* Footer */}
             <div className="text-center text-[10px] text-slate-400 space-y-1">
                 <p>Terima kasih telah menggunakan</p>
-                <p className="font-semibold text-slate-500">FreshClean Laundry</p>
+                <p className="font-semibold text-slate-500">{settings?.store_name || 'FreshClean Laundry'}</p>
                 <p>Simpan struk ini sebagai bukti pengambilan</p>
             </div>
         </div>

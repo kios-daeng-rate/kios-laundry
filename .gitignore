@@ -21,3 +21,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Production Deployment
+deploy_prod/
+dist/
+api/config.php
+api/email_config.php

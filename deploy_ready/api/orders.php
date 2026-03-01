@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Generate Order ID unik per tenant per hari
         $dateStr = date('Ymd');
-        $stmt = $db->prepare("SELECT id FROM orders WHERE id LIKE ? ORDER BY id DESC LIMIT 1");
-        $stmt->execute(["ORD-$dateStr-%"]);
+        $stmt = $db->prepare("SELECT id FROM orders WHERE id LIKE ? AND tenant_id = ? ORDER BY id DESC LIMIT 1");
+        $stmt->execute(["ORD-$dateStr-%", $tenantId]);
         $lastOrder = $stmt->fetchColumn();
         
         $counter = 1;

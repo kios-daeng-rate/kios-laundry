@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { Search, UserPlus, Plus, Minus, Trash2, ShoppingCart, Check, X, Printer, ChevronUp, Loader2, AlertCircle } from 'lucide-react';
 import { getCustomers, getServices, createOrder, createCustomer } from '../services/api';
 
@@ -12,6 +13,8 @@ const formatCurrency = (amount) => {
 import Receipt from '../components/Receipt';
 
 export default function NewOrder() {
+    const { settings } = useOutletContext();
+
     const [searchCustomer, setSearchCustomer] = useState('');
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [cart, setCart] = useState([]);
@@ -367,40 +370,51 @@ export default function NewOrder() {
 
             {/* Receipt Modal */}
             {receiptOrder && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                            <div className="flex items-center gap-2">
-                                <Check className="w-5 h-5 text-emerald-500" />
-                                <h3 className="text-lg font-bold text-slate-800">Order Berhasil!</h3>
+                <>
+                    {/* Screen Modal (hidden during print) */}
+                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 print:hidden">
+                        <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                                <div className="flex items-center gap-2">
+                                    <Check className="w-5 h-5 text-emerald-500" />
+                                    <h3 className="text-lg font-bold text-slate-800">Order Berhasil!</h3>
+                                </div>
+                                <button onClick={handleCloseReceipt} className="p-1 rounded-lg hover:bg-slate-100">
+                                    <X className="w-5 h-5 text-slate-400" />
+                                </button>
                             </div>
-                            <button onClick={handleCloseReceipt} className="p-1 rounded-lg hover:bg-slate-100">
-                                <X className="w-5 h-5 text-slate-400" />
-                            </button>
-                        </div>
-                        <div className="max-h-[60vh] overflow-y-auto bg-slate-50 py-4">
-                            <Receipt ref={receiptRef} order={receiptOrder} />
-                        </div>
-                        <div className="flex gap-3 p-4 border-t border-slate-100">
-                            <button
-                                onClick={handleCloseReceipt}
-                                className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-all text-sm"
-                            >
-                                Tutup
-                            </button>
-                            <button
-                                onClick={handlePrint}
-                                className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-600/30 hover:shadow-xl transition-all text-sm"
-                            >
-                                <Printer className="w-4 h-4" />
-                                Cetak Struk
-                            </button>
+                            <div className="max-h-[60vh] overflow-y-auto bg-slate-50 py-4 custom-scrollbar">
+                                <div className="space-y-8 flex flex-col items-center">
+                                    <Receipt ref={receiptRef} order={receiptOrder} settings={settings} />
+                                </div>
+                            </div>
+                            <div className="flex gap-3 p-4 border-t border-slate-100">
+                                <button
+                                    onClick={handleCloseReceipt}
+                                    className="flex-1 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-all text-sm"
+                                >
+                                    Tutup
+                                </button>
+                                <button
+                                    onClick={handlePrint}
+                                    className="flex-1 flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-600/30 hover:shadow-xl transition-all text-sm"
+                                >
+                                    <Printer className="w-4 h-4" />
+                                    Cetak Struk
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+
+                    {/* Print Content (hidden on screen) */}
+                    <div className="hidden print:block printable-receipts">
+                        <Receipt order={receiptOrder} settings={settings} />
+                        <Receipt order={receiptOrder} settings={settings} />
+                    </div>
+                </>
             )}
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 print:hidden">
                 {/* Left - Services Only */}
                 <div className="xl:col-span-2 space-y-6">
                     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
@@ -456,7 +470,7 @@ export default function NewOrder() {
 
             {/* Mobile Floating Bottom Bar - Only when cart has items */}
             {cart.length > 0 && (
-                <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-4 py-3 safe-bottom">
+                <div className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] px-4 py-3 safe-bottom print:hidden">
                     <button
                         onClick={() => setShowMobileCart(true)}
                         className="w-full flex items-center justify-between bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl px-5 py-3.5 shadow-lg shadow-primary-600/30"
@@ -480,7 +494,7 @@ export default function NewOrder() {
 
             {/* Mobile Cart Modal */}
             {showMobileCart && (
-                <div className="xl:hidden fixed inset-0 z-50 flex flex-col justify-end" onClick={() => setShowMobileCart(false)}>
+                <div className="xl:hidden fixed inset-0 z-50 flex flex-col justify-end print:hidden" onClick={() => setShowMobileCart(false)}>
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
                     <div
                         className="relative bg-white rounded-t-3xl max-h-[85vh] overflow-y-auto animate-[slideUp_0.3s_ease]"

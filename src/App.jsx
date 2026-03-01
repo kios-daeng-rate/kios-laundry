@@ -12,6 +12,7 @@ const Customers = lazy(() => import('./pages/Customers'));
 const Services = lazy(() => import('./pages/Services'));
 const Reports = lazy(() => import('./pages/Reports'));
 const Settings = lazy(() => import('./pages/Settings'));
+const PublicStatus = lazy(() => import('./pages/PublicStatus'));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center h-64">
@@ -84,6 +85,7 @@ export default function App() {
       <Router>
         <div className={`transition-opacity duration-300 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'} min-h-screen bg-slate-50`}>
           <Routes>
+            <Route path="/order-status/:orderId" element={<Suspense fallback={<PageLoader />}><PublicStatus /></Suspense>} />
             {!user ? (
               <Route path="*" element={<Login onLogin={handleLogin} settings={settings} />} />
             ) : (

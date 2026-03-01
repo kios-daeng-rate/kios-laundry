@@ -277,4 +277,10 @@ export const resetData = async (adminId, password) => {
     return response.data;
 };
 
+export const checkOrderStatus = async (orderId) => {
+    // This is a public call, doesn't need tenant ID header usually, but check-status.php handles it
+    const response = await api.get(`/check-status.php?order_id=${orderId}`);
+    return response.data;
+};
+
 export default api;

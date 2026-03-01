@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `store_name` varchar(100) NOT NULL,
   `address` text,
   `phone` varchar(20),
-  `brand_logo` LONGTEXT DEFAULT NULL,
+  `brand_logo` varchar(255) DEFAULT NULL,
   `open_time` time NOT NULL DEFAULT '08:00:00',
   `close_time` time NOT NULL DEFAULT '20:00:00',
   `operational_days` varchar(100) NOT NULL DEFAULT 'Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',

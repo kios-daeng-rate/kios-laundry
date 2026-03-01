@@ -69,9 +69,21 @@ export default function Reports() {
     const topService = serviceData[0];
     const maxCount = topService?.value || 1;
 
-    // Payment method stats (estimated from recent orders)
-    const paymentStats = {};
-    data.recent_orders.forEach((o) => { paymentStats[o.payment_method || 'Cash'] = (paymentStats[o.payment_method || 'Cash'] || 0) + 1; });
+    // Payment method stats (initialized with all methods to ensure 0s are shown)
+    const paymentStats = {
+        'Cash': 0,
+        'Transfer': 0,
+        'QRIS': 0,
+        'Bayar Nanti': 0
+    };
+    data.recent_orders.forEach((o) => {
+        const method = o.payment_method || 'Cash';
+        if (paymentStats.hasOwnProperty(method)) {
+            paymentStats[method]++;
+        } else {
+            paymentStats[method] = 1;
+        }
+    });
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
             if (is12Months) {

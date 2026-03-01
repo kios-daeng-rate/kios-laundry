@@ -77,29 +77,35 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden !important;
-  }
 
-  .receipt-content,
-  .receipt-content * {
-    visibility: visible !important;
+  body,
+  html {
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
   .receipt-content {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    margin: 0 auto !important;
     width: 80mm !important;
     padding: 8mm !important;
-    margin: 0 !important;
     font-size: 11px !important;
     background: white !important;
     color: black !important;
+    border: none !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    page-break-after: always !important;
+    break-after: always !important;
+  }
+
+  .receipt-content:last-of-type {
+    page-break-after: auto !important;
+    break-after: auto !important;
   }
 
   @page {
-    size: 80mm auto;
+    size: portrait;
     margin: 0;
   }
 }
