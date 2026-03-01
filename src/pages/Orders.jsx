@@ -28,22 +28,42 @@ const formatDate = (dateString) => {
 const allStatuses = ['Semua', 'Baru', 'Diproses', 'Dicuci', 'Disetrika', 'Selesai', 'Diambil'];
 const statusFlow = ['Baru', 'Diproses', 'Dicuci', 'Disetrika', 'Selesai', 'Diambil'];
 
-const sendWhatsApp = (order) => {
-    // In a real app we'd fetch the customer's phone if it's not joined in the order row.
-    // For now we'll only send a generic message since phone isn't fetched in getOrders.
+const sendWhatsApp = (order, settings) => {
+    // We fall back to standard text if no explicit phone is provided, but since orders.php
+    // doesn't join customer_phone currently, we just open the WhatsApp API without a specific number,
+    // or if the user has a known number from another screen they can paste it in WA Web.
+    // If order.customer_phone exists later, it will be used.
+    const phone = order.customer_phone || '';
+
+    // Clean phone number: remove leading 0 and replace with 62
+    let cleanPhone = phone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) {
+        cleanPhone = '62' + cleanPhone.substring(1);
+    }
+
+    const storeName = settings?.store_name || 'FreshClean Laundry';
     const lines = [
-        'Halo ' + order.customer_name,
+        `Halo ${order.customer_name},`,
         '',
-        'Laundry Anda sudah *SELESAI*',
+        `Laundry Anda *${order.id}* sudah *SELESAI* dan siap untuk diambil.`,
         '',
-        'No. Order: *' + order.id + '*',
+        `Total Tagihan: *${formatCurrency(order.total)}*`,
         '',
-        'Silakan ambil di *FreshClean Laundry*.',
+        `Silakan ambil di *${storeName}*.`,
         'Terima kasih!',
     ];
 
-    // Placeholder phone action 
-    alert(`Akan mengirim WhatsApp ke Pelanggan:\n\n${lines.join('\n')}`);
+    const message = encodeURIComponent(lines.join('\n'));
+    let url = '';
+
+    if (cleanPhone) {
+        url = `https://wa.me/${cleanPhone}?text=${message}`;
+    } else {
+        // Fallback to whatsapp web/app without specific number (allows user to select contact)
+        url = `https://wa.me/?text=${message}`;
+    }
+
+    window.open(url, '_blank');
 };
 
 export default function Orders() {
@@ -114,7 +134,7 @@ export default function Orders() {
             setShowStatusDropdown(false);
 
             if (newStatus === 'Selesai' && updatedOrder) {
-                sendWhatsApp(updatedOrder);
+                sendWhatsApp(updatedOrder, settings);
             }
         } catch (err) {
             alert('Gagal mengupdate status: ' + (err.response?.data?.error || err.message));
@@ -312,7 +332,7 @@ export default function Orders() {
                             {/* Action Buttons */}
                             <div className="flex gap-3">
                                 <button
-                                    onClick={() => sendWhatsApp(selectedOrder)}
+                                    onClick={() => sendWhatsApp(selectedOrder, settings)}
                                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-600 transition-all text-sm"
                                 >
                                     <MessageCircle className="w-4 h-4" />
