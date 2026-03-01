@@ -130,16 +130,16 @@ export default function Orders() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 print:space-y-0 print:pb-0">
             {error && (
-                <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm flex items-center gap-2 border border-red-100">
+                <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm flex items-center gap-2 border border-red-100 print:hidden">
                     <AlertCircle className="w-5 h-5 shrink-0" />
                     {error}
                 </div>
             )}
 
             {/* Filters */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 print:hidden">
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
                     {/* Search */}
                     <div className="relative flex-1">
@@ -177,7 +177,7 @@ export default function Orders() {
             </div>
 
             {/* Orders Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden print:hidden">
                 <div className="px-6 py-4 border-b border-slate-100">
                     <p className="text-sm text-slate-500">
                         Menampilkan <span className="font-bold text-slate-700">{filteredOrders.length}</span> pesanan
