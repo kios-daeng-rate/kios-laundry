@@ -311,8 +311,12 @@ export default function Orders() {
                                 <span className="text-sm text-slate-700">{formatDate(selectedOrder.created_at)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-sm text-slate-500">Estimasi Selesai</span>
-                                <span className="text-sm text-slate-700">{formatDate(selectedOrder.pickup_date)}</span>
+                                <span className="text-sm text-slate-500">Estimasi Pengerjaan</span>
+                                <span className="text-sm text-slate-700">{selectedOrder.estimasi ? selectedOrder.estimasi : '-'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-sm text-slate-500">Tanggal Diambil</span>
+                                <span className="text-sm text-slate-700">{selectedOrder.pickup_date ? formatDate(selectedOrder.pickup_date) : '-'}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-sm text-slate-500">Pembayaran</span>

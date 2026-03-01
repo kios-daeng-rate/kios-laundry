@@ -7,9 +7,10 @@ $tenantId = getTenantId();
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         $stmt = $db->prepare("
-            SELECT o.*, c.phone as customer_phone 
+            SELECT o.*, c.phone as customer_phone, s.estimasi 
             FROM orders o 
             LEFT JOIN customers c ON o.customer_id = c.id 
+            LEFT JOIN services s ON o.service_id = s.id
             WHERE o.tenant_id = ? 
             ORDER BY o.created_at DESC
         ");
